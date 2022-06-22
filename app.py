@@ -127,7 +127,7 @@ def strictly_increasing(data_array):
 	
 	return data_array
 
-@st.cache
+# @st.cache
 def predict(geol_column):
 	temperature, maturity = neural_network_jarufah_basin.get_all_predictions(data = geol_column).value
 
