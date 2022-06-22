@@ -16,7 +16,7 @@ _lock = RendererAgg.lock
 
 @st.cache
 def get_daisi():
-	return pyd.Daisi("laiglejm/Neural Network Jarufah Basin")
+	return pyd.Daisi("laiglejm/Neural Network Jafurah Basin")
 
 
 
