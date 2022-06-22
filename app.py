@@ -24,7 +24,6 @@ def get_cmp(OF = 'A'):
 	bnd = lim_oil_of[OF]
 	
 	if OF != 'F':
-
 		cdict = {'red': [(0.0, 0.0078, 0.0078),
 						(bnd, 0.0078, 0.0078),
 						(bnd, 0.0, 0.0),
@@ -83,7 +82,6 @@ def get_cmp(OF = 'A'):
 
 path = 'data/'
 
-
 well_depth_df = pd.read_excel("data/well_depth.xlsx")
 w_depth = well_depth_df['Depth'].values
 
@@ -97,13 +95,9 @@ with open('DAISI.md', 'r') as f:
 with open('DAISI.md', 'r') as f:
 	summary_md = f.read()[len(title):]
 
-
-
-
 ##################################################################################################
 
 def get_sts(x, y, sts_array, depth):
-	print(y)
 	return np.interp(y, depth, sts_array)
 
 ##################################################################################################
@@ -114,20 +108,11 @@ def create_sts_map(depth, sts, sts_min, sts_max):
 	X, Y = np.meshgrid(x, y)
 
 	sts_map = get_sts(X, Y, sts, depth)
-	print(sts_map)
 
 	return sts_map
 
 ##################################################################################################
-def strictly_increasing(data_array):
-	for i,d in enumerate(data_array):
-		if i>0:
-			if d < data_array[i-1]:
-				data_array[i] = data_array[i-1] + 1e-3
-	
-	return data_array
 
-# @st.cache
 def predict(geol_column):
 	temperature, maturity = neural_network_jarufah_basin.get_all_predictions(data = geol_column).value
 
@@ -177,7 +162,7 @@ def st_ui():
 		user_depths = pd.read_excel(user_file)
 		user_depths = user_depths['Depth'].values
 		geol_column = [d for d in user_depths]
-	print(geol_column)
+
 	template_data = deepcopy(well_depth_df)
 	towrite = BytesIO()
 	downloaded_file = template_data.to_excel(towrite, encoding='utf-8', index=False, header=True) # write to BytesIO buffer
@@ -192,7 +177,6 @@ def st_ui():
 
 	erosion = st.sidebar.slider('Neogene erosion (default = 1000m)',0, 2000, 1000)
 
-	
 	for i in range(1, len(geol_column)):
 			geol_column[i] *= (1 + depth_uncertainty)
 	
@@ -218,7 +202,6 @@ def st_ui():
 							   "Lower Crust RHP" : [0., 2., 1.],
 							   "Mantle Thickness": [80, 120, 100]}
 
-	# crust_type = st.sidebar.selectbox("Crust type selection", ["Free selection", "Oceanic Crust", "Transitional Crust", "Continental Crust"], index = 2)
 	crust_type = "Free selection"
 	mmd = crust_dict[crust_type]["Crust Thickness"]
 	crust_thickness = st.sidebar.slider("Crust Thickness (Top Basement to Moho) (km)", mmd[0], mmd[1], mmd[2])
@@ -230,12 +213,9 @@ def st_ui():
 	st.sidebar.subheader(f"Moho depth = {moho_depth} km")
 	
 	mmd = crust_dict[crust_type]["Upper Crust RHP"]
-	if crust_type == "Oceanic Crust":
-		st.sidebar.write("Crust RHP = 0 W/m3")
-		rhp = 0.0
-	else:
-		rhp = st.sidebar.slider("Crust RHP (uW/m3)", mmd[0], mmd[1], mmd[2])
-		rhp *= 1.0e-6
+
+	rhp = st.sidebar.slider("Crust RHP (uW/m3)", mmd[0], mmd[1], mmd[2])
+	rhp *= 1.0e-6
 
 	uc_rhp = rhp / (0.5 * 0.33 + 0.67)
 	lc_rhp = min(0.5 * uc_rhp, 0.4e-6)
@@ -262,7 +242,6 @@ def st_ui():
 	of_select = st.sidebar.selectbox("Organofacies selection (For onset of Oil Window and STS-TMax correlation)", tmax_headers[1:])
 
 	if display_mode == "TMax":
-		
 		tmax = tmax_of[tmax_headers[0]].values
 		of_sts = tmax_of[of_select].values
 
@@ -272,7 +251,6 @@ def st_ui():
 	max_tmax = 600
 
 	if display_mode == "TMax":
-
 		min_tmax = float(st.sidebar.text_input("Minimum Tmax (C)", 400))
 		max_tmax = float(st.sidebar.text_input("Maximum Tmax (C)", 600))
 	
@@ -283,22 +261,19 @@ def st_ui():
 	min_depth = float(st.sidebar.text_input("Minimum depth (m)", 0.0))
 	max_depth = float(st.sidebar.text_input("Maximum depth (m)", max(1000*top_basement + 1000, 7000)))
 	max_temperature = float(st.sidebar.text_input("Maximum Present Day Temperature (C)", 400))
+
 	st.sidebar.image('data/grey.png')
 
 	temperature, maturity = predict(geol_column)
-	# maturity = neural_network_jarufah_basin.get_predictions(data = geol_column, variable = 'maturity').value
 
 	temperature = temperature[:,0,0].flatten()
 	maturity = maturity[:,0,0].flatten()
 
 	temperature = np.insert(temperature, 0, present_day_temperature)
-	maturity = np.delete(maturity, [1,6])
-	temperature = np.delete(temperature, [1,6])
+	maturity = np.delete(maturity, [1,6]) #Delete values in hiatus
+	temperature = np.delete(temperature, [1,6]) #Delete values in hiatus
 
 	maturity = np.insert(maturity, 0, 0.2045)
-
-	temperature = strictly_increasing(temperature)
-	maturity = strictly_increasing(maturity)
 
 	sts = np.interp(maturity/100, ro_sts['ezRo'], ro_sts['sts'])
 	if display_mode == "TMax":
@@ -323,7 +298,6 @@ def st_ui():
 	if user_data is not None:
 		xls = pd.read_excel(user_data)
 		data = xls.values
-	salt_color = "#FF39E7"
 	colors = ['#FFF798', '#EEA26D', '#7FC06C', '#D5EDF5', '#C6E7F1', '#C6E7F1', '#BAE0E5', '#BAE0E5', '#72C0E0', '#804C8D', '#D75F49', '#7CB4B9']
 
 	sts_map = create_sts_map(mid_points, sts, min_tmax, max_tmax)
@@ -331,10 +305,11 @@ def st_ui():
 	extent = [min_tmax, max_tmax, mid_points[0], mid_points[-1]]
 	print(extent)
 	threshold_display = (max_depth - min_depth) / 70
+
 	if display_mode == "TMax":
-			caption = 'Computed Temperature and TMax profile'
+			caption = 'Computed Temperature and TMax profiles'
 	else:
-		caption = 'Temperature and Easy Ro profile'
+		caption = 'Computed Temperature and Easy Ro profiles'
 
 	st.subheader(caption)
 	with _lock:
@@ -345,7 +320,7 @@ def st_ui():
 
 		ax1.invert_yaxis()
 		ax1.set_xlabel('Computed Temperature and STS (white curve) (C)')
-		ax1.set_ylabel('Depth (MDm)')
+		ax1.set_ylabel('Depth (MD m)')
 		ax1.set_xlim([0,max_temperature])
 		
 		if data is not None:
@@ -353,14 +328,13 @@ def st_ui():
 			ax1.plot(data[:,2], data[:,0], 'ko')
 
 		ax1.grid()
-		# markers = [([0,max_temperature],[depths[i], depths[i]]) for i in range(8)]
 		markers = [([0,max_temperature],[depths[0], depths[0]])]
+
 		idx=0
 		for i in range(12):
 			nb_marks = len(layers_wrap[i])
 			idx += nb_marks
 			markers.append(([0,max_temperature],[depths[idx], depths[idx]]))
-
 
 		for ii,m in enumerate(markers):
 			skip = False
@@ -376,12 +350,9 @@ def st_ui():
 				y3 = y2
 				y4 = y1
 
-			
 			y = np.array([[x1,y1], [x2, y2], [x2, y3], [x1, y4]])
 			if ii > 0 and ii < 12:
 				alpha = 0.5
-				if colors[ii] == salt_color:
-					alpha = 1
 				p = Polygon(y, facecolor = colors[ii], alpha = alpha)
 				ax1.add_patch(p)
 				if ii > 1 and m[1][0] - markers[ii-1][1][0] > threshold_display:
@@ -392,40 +363,30 @@ def st_ui():
 						ax1.annotate(f"{layers_dict[ii]} - {int(list_depths[ii])}m", (max_temperature, m[1][0] + threshold_display), ha = 'right')
 		ax1.annotate(f"Top Basement - {int(list_depths[12])}m", (max_temperature, m[1][1] + 150), ha = 'right')
 
-		
-					
 		if display_mode == "EasyRo":
 			max_point = max_Ro
 			min_point = min_Ro
 			ax2.plot(maturity, mid_points, 'o-', c='black')
-			# ax2.plot(sts/100, mid_points, 'o--', c='white')
-			ax2.set_ylim([0,max_depth])
-
 			if data is not None:
 				ax2.plot(data[:,4], data[:,0], 'ko')
 
-			ax2.invert_yaxis()
 			ax2.set_xlabel('Easy Ro (%Ro eq.)')
-			
-			max_point = max_Ro
-			min_point = min_Ro
+
 		elif display_mode == "TMax":
 			max_point = max_tmax
 			min_point = min_tmax
-			
 			ax2.plot(tmax_d, mid_points, 'o-', c='black')
-			ax2.set_ylim([min_depth,max_depth])
-
 			if data is not None:
-				ax2.plot(data[:,4], data[:,0], 'ko')
+				ax2.plot(data[:,3], data[:,0], 'ko')
 
-			ax2.invert_yaxis()
 			ax2.set_xlabel('Computed TMax (C)')
 
+		ax2.set_ylim([min_depth,max_depth])
+		ax2.invert_yaxis()
 		ax2.set_ylabel('Depth (MDm)')
 		ax2.set_xlim([min_point,max_point])
-
 		ax2.grid()
+		
 		ax2.imshow(sts_map, extent=[min_point,max_point, 0,mid_points[-1]], cmap=get_cmp(of_select), origin='lower', aspect='auto', vmin=90, vmax=250)
 
 		markers = [([min_point,max_point],[depths[0], depths[0]])]
@@ -436,20 +397,8 @@ def st_ui():
 			markers.append(([min_point,max_point],[depths[idx], depths[idx]]))
 		
 		for ii,m in enumerate(markers):
-			skip = False
 			ax2.plot(m[0], m[1], 'k--', lw=0.5)
-			x1 = m[0][0]
-			y1 = m[1][0]
-			x2 = m[0][1]
-			y2 = m[1][1]
-			if ii < len(markers) - 1:
-				y3 = markers[ii+1][1][1]
-				y4 = markers[ii+1][1][0]
-			else:
-				y3 = y2
-				y4 = y1
 
-		print(top_oil_window, lim1, lim2, lim3, mid_points[-1])
 		if mid_points[-1] - top_oil_window > 100 and of_select != 'F':
 			ax2.annotate('Early Oil  ', (max_point, top_oil_window + 150), ha = 'right')
 
@@ -467,6 +416,5 @@ def st_ui():
 		
 		st.image(buf, use_column_width=False, caption=caption)
 	
-
 if __name__ == "__main__":
 	st_ui()
