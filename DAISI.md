@@ -9,8 +9,6 @@ The default depths and stratigraphic scheme in the app were derived by t!Ps, bas
 [A basin modeling study of the Jafurah Sub-Basin, Saudi Arabia: Implications for unconventional hydrocarbon potential of the Jurassic Tuwaiq Mountain Formation](https://www.sciencedirect.com/science/article/abs/pii/S0166516216303032?via%3Dihub)
 A. Hakami and S. Inan, 2016
 
-![Location Map](https://github.com/Johnbt2016/jarufah-basin-app/data/Location_Map.png "Location Map of the Jarufah basin. Initial depths in this app are from Well E. Image from A. Hakami and S. Inan, 2016")
-
 Understand the impact of the parameters:
 
 * **Depth uncertainty** : scales the entire geological column by the factor selected; for example reflecting uncertainty in seismic depth conversion

@@ -14,7 +14,11 @@ from matplotlib.backends.backend_agg import RendererAgg
 from matplotlib.patches import Polygon
 _lock = RendererAgg.lock
 
-neural_network_jarufah_basin = pyd.Daisi("laiglejm/Neural Network Jarufah Basin")
+@st.cache
+def get_daisi():
+	return pyd.Daisi("laiglejm/Neural Network Jarufah Basin")
+
+
 
 lim_oil_of = {'A':0.0625, 'B':0.125, 'C':0.1875, 'DE':0.28125, 'F':0.375}
 lim_oil_sts = {'A':100, 'B':110, 'C':120, 'DE':135, 'F':150}
@@ -113,14 +117,16 @@ def create_sts_map(depth, sts, sts_min, sts_max):
 
 ##################################################################################################
 
-def predict(geol_column):
-	temperature, maturity = neural_network_jarufah_basin.get_all_predictions(data = geol_column).value
+def predict(geol_column, daisi):
+	temperature, maturity = daisi.get_all_predictions(data = geol_column).value
 
 	return temperature, maturity
 
 ##################################################################################################
 def st_ui():
 	st.set_page_config(layout = "wide")
+
+	neural_network_jarufah_basin = get_daisi()
 
 	layers_dict = {0: "Quaternary",
 						1: "Tertiary",
@@ -264,7 +270,7 @@ def st_ui():
 
 	st.sidebar.image('data/grey.png')
 
-	temperature, maturity = predict(geol_column)
+	temperature, maturity = predict(geol_column, neural_network_jarufah_basin)
 
 	temperature = temperature[:,0,0].flatten()
 	maturity = maturity[:,0,0].flatten()
@@ -292,6 +298,9 @@ def st_ui():
 
 	with st.expander("Summary"):
 		st.markdown(summary_md)
+		st.subheader("Location Map of the Jafurah basin and Ghawar field. Initial depths values in this app are estimated from Well E")
+		st.text("Image from A. Hakami and S. Inan, 2016")
+		st.image('data/Location_Map.png')
 
 	user_data = st.file_uploader("Load your calibration data ! (Excel format, 5 columns : [depth, raw temperature, corrected temperature, TMax, easyRo])")
 	data = None
@@ -303,7 +312,7 @@ def st_ui():
 	sts_map = create_sts_map(mid_points, sts, min_tmax, max_tmax)
 
 	extent = [min_tmax, max_tmax, mid_points[0], mid_points[-1]]
-	print(extent)
+	
 	threshold_display = (max_depth - min_depth) / 70
 
 	if display_mode == "TMax":
