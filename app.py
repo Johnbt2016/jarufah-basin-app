@@ -168,7 +168,7 @@ def st_ui():
 	downloaded_file = template_data.to_excel(towrite, encoding='utf-8', index=False, header=True) # write to BytesIO buffer
 	st.sidebar.download_button(label="Download the geological column template", data=towrite.getvalue(), file_name='template_daisi_SA.xlsx', mime="application/vnd.ms-excel")
 
-	st.sidebar.write("Expand the 'Summary' section for more info on the below parameters")
+	st.sidebar.write("Expand the 'Summary' section in the main window for more info on the below parameters")
 
 	present_day_temperature = st.sidebar.slider("Present Day SWIT (C)", 10, 40, 24)
 
