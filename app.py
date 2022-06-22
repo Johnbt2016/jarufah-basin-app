@@ -415,6 +415,8 @@ def st_ui():
 		fig.savefig(buf, format="png", bbox_inches='tight', transparent = True, dpi=200)
 		
 		st.image(buf, use_column_width=False, caption=caption)
+
+	st.subheader("Coming soon : burial history and expulsion history plots !")
 	
 if __name__ == "__main__":
 	st_ui()
