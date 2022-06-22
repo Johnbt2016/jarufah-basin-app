@@ -41,7 +41,7 @@ data = np.append(data, 24) # Present day surface temperature
 data = data.reshape((49, 1, 1)) # 1D geological column with 49 parameters. 
 # Note that you can also pass a grids based model of size (nx,ny). In that case, data.shape should be (49, ny, nx)
 
-sa_model_1d = pyd.Daisi("Neural Network Jarufah Basin")
-result = sa_model_1d.get_predictions(data, variable = 'temperature').value # variable = 'temperature' or 'maturity'. 
+neural_network_jarufah_basin = pyd.Daisi("Neural Network Jarufah Basin")
+result = neural_network_jarufah_basin.get_predictions(data, variable = 'temperature').value # variable = 'temperature' or 'maturity'. 
 # Values are returned at cells mid points.
 ```
