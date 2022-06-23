@@ -87,7 +87,7 @@ def get_cmp(OF = 'A'):
 path = 'data/'
 
 well_depth_df = pd.read_excel("data/well_depth.xlsx")
-w_depth = well_depth_df['Depth'].values
+w_depth = well_depth_df['Depth (m)'].values
 
 f = 'data/STS_ezRo.csv'
 ro_sts = pd.read_csv(f, sep=';')
@@ -323,7 +323,7 @@ def st_ui():
 	st.subheader(caption)
 	with _lock:
 		fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18,12))
-		ax1.plot(temperature, mid_points, 'o-', lw = 3)
+		ax1.plot(temperature, mid_points, 'ko-', lw = 3)
 		ax1.plot(sts, mid_points, 'o--', c='white')
 		ax1.set_ylim([min_depth,max_depth])
 
@@ -365,9 +365,9 @@ def st_ui():
 				p = Polygon(y, facecolor = colors[ii], alpha = alpha)
 				ax1.add_patch(p)
 				if ii > 1 and m[1][0] - markers[ii-1][1][0] > threshold_display:
-					if 'Hanifa' in layers_dict[ii]:
-						layers_dict[ii] = 'Hanifa Source Rock'
-						ax1.annotate(f"{layers_dict[ii]} - {int(list_depths[ii])}m", (max_temperature, m[1][0] + threshold_display/4), ha = 'right', bbox={'facecolor': 'white', 'edgecolor':'none', 'alpha': 1, 'pad': 1})
+					if 'Hanifa' in layers_dict[ii] or 'Jubaila' in layers_dict[ii]:
+						layers_dict[ii] += ' Source Rock'
+						ax1.annotate(f"{layers_dict[ii]} - {int(list_depths[ii])}m", (max_temperature, m[1][0] + threshold_display/2), ha = 'right', bbox={'facecolor': 'white', 'edgecolor':'none', 'alpha': 0.5, 'pad': 1})
 					else:
 						ax1.annotate(f"{layers_dict[ii]} - {int(list_depths[ii])}m", (max_temperature, m[1][0] + threshold_display), ha = 'right')
 		ax1.annotate(f"Top Basement - {int(list_depths[12])}m", (max_temperature, m[1][1] + 150), ha = 'right')
