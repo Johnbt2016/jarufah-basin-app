@@ -30,7 +30,7 @@ import pydaisi as pyd
 import numpy as np
 import pandas as pd
 
-data = pd.read_excel('template_daisi_SA.xlsx')['Depth'].values # Depths of the 43 key surfaces
+data = pd.read_excel('template_daisi_SA.xlsx')['Depth (m)'].values # Depths of the 43 key surfaces
 data = np.append(data, 1000) # Neogene erosion amount [m]
 data = np.append(data, 25000) # Crust thickness [m](Base sediment to Moho)
 data = np.append(data, 1e-7) # Lower crust RHP [W/m3](34% of total crust thickness)
