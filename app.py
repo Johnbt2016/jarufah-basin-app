@@ -401,9 +401,10 @@ def st_ui():
 		ax2.set_xlim([min_point,max_point])
 		ax2.grid()
 
-		if st.session_state.of_select != of_select:
-			colormap_display = colormap.get_cmp(of_select).value
-			st.session_state.of_select = of_select
+		# if st.session_state.of_select != of_select:
+		# 	colormap_display = get_cmp(of_select)
+		# 	st.session_state.of_select = of_select
+		colormap_display = get_cmp(of_select)
 
 		ax2.imshow(sts_map, extent=[min_point,max_point, 0,mid_points[-1]], cmap=colormap_display, origin='lower', aspect='auto', vmin=90, vmax=250)
 
