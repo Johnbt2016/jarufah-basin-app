@@ -130,6 +130,8 @@ def st_ui():
 
 	# neural_network_jarufah_basin = get_daisi()
 	neural_network_jarufah_basin, colormap = get_daisi()
+	if 'of_select' not in st.session_state:
+		st.session_state.of_select = -1
 
 	layers_dict = {0: "Quaternary",
 						1: "Tertiary",
@@ -399,8 +401,10 @@ def st_ui():
 		ax2.set_xlim([min_point,max_point])
 		ax2.grid()
 
+		if st.session_state.of_select != of_select:
+			colormap_display = colormap.get_cmp(of_select).value
+			st.session_state.of_select = of_select
 
-		colormap_display = colormap.get_cmp(of_select).value
 		ax2.imshow(sts_map, extent=[min_point,max_point, 0,mid_points[-1]], cmap=colormap_display, origin='lower', aspect='auto', vmin=90, vmax=250)
 
 		markers = [([min_point,max_point],[depths[0], depths[0]])]
