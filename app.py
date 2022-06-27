@@ -16,7 +16,9 @@ _lock = RendererAgg.lock
 
 @st.cache
 def get_daisi():
-	return pyd.Daisi("laiglejm/Neural Network Jafurah Basin")
+	nn = pyd.Daisi("laiglejm/Neural Network Jafurah Basin")
+	colormap = pyd.Daisi("laiglejm/Interactive basin modeling Jafurah Basin")
+	return nn, colormap
 
 
 
@@ -126,7 +128,8 @@ def predict(geol_column, daisi):
 def st_ui():
 	st.set_page_config(layout = "wide")
 
-	neural_network_jarufah_basin = get_daisi()
+	# neural_network_jarufah_basin = get_daisi()
+	neural_network_jarufah_basin, colormap = get_daisi()
 
 	layers_dict = {0: "Quaternary",
 						1: "Tertiary",
@@ -395,8 +398,10 @@ def st_ui():
 		ax2.set_ylabel('Depth (MDm)')
 		ax2.set_xlim([min_point,max_point])
 		ax2.grid()
-		
-		ax2.imshow(sts_map, extent=[min_point,max_point, 0,mid_points[-1]], cmap=get_cmp(of_select), origin='lower', aspect='auto', vmin=90, vmax=250)
+
+
+		colormap_display = colormap.get_cmp(of_select).value
+		ax2.imshow(sts_map, extent=[min_point,max_point, 0,mid_points[-1]], cmap=colormap_display, origin='lower', aspect='auto', vmin=90, vmax=250)
 
 		markers = [([min_point,max_point],[depths[0], depths[0]])]
 		idx=0
